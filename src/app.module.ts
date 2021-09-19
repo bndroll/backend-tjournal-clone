@@ -4,6 +4,7 @@ import { AppService } from './app.service'
 import { UserModule } from './user/user.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserEntity } from './user/entities/user.entity'
+import { PostModule } from './post/post.module';
 
 
 @Module({
@@ -18,7 +19,8 @@ import { UserEntity } from './user/entities/user.entity'
             entities: [UserEntity],
             synchronize: true
         }),
-        UserModule],
+        UserModule,
+        PostModule],
     controllers: [AppController],
     providers: [AppService]
 })

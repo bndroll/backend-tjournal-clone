@@ -1,19 +1,22 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 
 
-@Entity('users')
-export class UserEntity {
+@Entity('posts')
+export class PostEntity {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    fullName: string
+    title: string
 
-    @Column({ unique: true })
-    email: string
+    @Column()
+    body: string
+
+    @Column({ default: 0 })
+    view: number
 
     @Column({ nullable: true })
-    password?: string
+    tags?: string
 
     @CreateDateColumn({ type: 'timestamp' })
     createdAt: Date
