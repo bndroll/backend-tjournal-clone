@@ -4,8 +4,10 @@ import { AppService } from './app.service'
 import { UserModule } from './user/user.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserEntity } from './user/entities/user.entity'
-import { PostModule } from './post/post.module';
+import { PostModule } from './post/post.module'
 import { PostEntity } from './post/entities/post.entity'
+import { CommentModule } from './comment/comment.module'
+import { CommentEntity } from './comment/entities/comment.entity'
 
 
 @Module({
@@ -17,11 +19,12 @@ import { PostEntity } from './post/entities/post.entity'
             username: 'postgres',
             password: 'postgres',
             database: 'tjournal',
-            entities: [UserEntity, PostEntity],
+            entities: [UserEntity, PostEntity, CommentEntity],
             synchronize: true
         }),
         UserModule,
-        PostModule],
+        PostModule,
+        CommentModule],
     controllers: [AppController],
     providers: [AppService]
 })
