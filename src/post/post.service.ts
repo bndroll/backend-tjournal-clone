@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
+import { Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+
 import { CreatePostDto } from './dto/create-post.dto'
 import { UpdatePostDto } from './dto/update-post.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
 import { PostEntity } from './entities/post.entity'
 import { SearchPostDto } from './dto/search-post.dto'
 
@@ -33,15 +34,30 @@ export class PostService {
     async search(dto: SearchPostDto) {
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} post`
+    async findOne(id: number) {
+        // await this.repository
+        //     .createQueryBuilder('posts')
+        //     .whereInIds(id)
+        //     .update()
+        //     .execute()
+
+        const find = await this.repository.findOne(id)
+        if (!find) throw new NotFoundException('Статья не найдена')
+
+        return this.repository.findOne(id)
     }
 
-    update(id: number, updatePostDto: UpdatePostDto) {
-        return `This action updates a #${id} post`
+    async update(id: number, dto: UpdatePostDto) {
+        const find = await this.repository.findOne(+id)
+        if (!find) throw new NotFoundException('Статья не найдена')
+
+        return this.repository.update(id, dto)
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} post`
+    async remove(id: number) {
+        const find = await this.repository.findOne(+id)
+        if (!find) throw new NotFoundException('Статья не найдена')
+
+        return this.repository.delete(id)
     }
 }
