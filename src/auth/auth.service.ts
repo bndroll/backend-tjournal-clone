@@ -1,26 +1,59 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ForbiddenException, Injectable } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+
+import { UserService } from '../user/user.service'
+import { UserEntity } from '../user/entities/user.entity'
+import { CreateUserDto } from '../user/dto/create-user.dto'
+
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService
+    ) {
+    }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+    async validateUser(email: string, password: string): Promise<any> {
+        const user = await this.userService.findByCond({
+            email,
+            password
+        })
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+        if (user && user.password === password) {
+            const { password, ...result } = user
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+            return result
+        }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
+        return null
+    }
+
+    generateJwtToken(data: { id: number, email: string }) {
+        const payload = { email: data.email, sub: data.id }
+
+        return this.jwtService.sign(payload)
+    }
+
+    async login(user: UserEntity) {
+        const { password, ...userData } = user
+
+        return {
+            ...userData,
+            token: this.generateJwtToken(userData)
+        }
+    }
+
+    async register(dto: CreateUserDto) {
+        try {
+            const { password, ...user } = await this.userService.create(dto)
+
+            return {
+                ...user,
+                token: this.generateJwtToken(user)
+            }
+        } catch (e) {
+            throw new ForbiddenException('Ошибка при регистрации')
+        }
+    }
 }

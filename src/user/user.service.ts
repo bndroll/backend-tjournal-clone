@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { CreateUserDto } from './dto/create-user.dto'
-import { InjectRepository } from '@nestjs/typeorm'
-import { UserEntity } from './entities/user.entity'
 import { Repository } from 'typeorm'
+import { InjectRepository } from '@nestjs/typeorm'
+
+import { CreateUserDto } from './dto/create-user.dto'
+import { UserEntity } from './entities/user.entity'
 import { SearchUserDto } from './dto/search-user.dto'
 import { LoginUserDto } from './dto/login-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -36,6 +37,25 @@ export class UserService {
         return this.repository.update(id, dto)
     }
 
-    search(dto: SearchUserDto) {
+    async search(dto: SearchUserDto) {
+        const qb = this.repository.createQueryBuilder('u')
+
+        qb.limit(dto.limit || 0)
+        qb.limit(dto.take || 10)
+
+        if (dto.fullName) qb.andWhere(`u.fullName ILIKE :fullName`)
+        if (dto.email) qb.andWhere(`u.email ILIKE :email`)
+
+        qb.setParameters({
+            email: `%${dto.email}%`,
+            fullName: `%${dto.fullName}%`
+        })
+
+        const [items, total] = await qb.getManyAndCount()
+
+        return {
+            items,
+            total
+        }
     }
 }
