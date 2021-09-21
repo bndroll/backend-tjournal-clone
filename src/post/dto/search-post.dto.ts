@@ -1,8 +1,8 @@
 export class SearchPostDto {
     title?: string
     body?: string
-    view?: 'DESC' | 'ASC'
+    views?: 'DESC' | 'ASC'
     limit?: number
     take?: number
-    tag: string
+    tag?: string
 }

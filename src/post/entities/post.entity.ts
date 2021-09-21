@@ -13,7 +13,7 @@ export class PostEntity {
     body: string
 
     @Column({ default: 0 })
-    view: number
+    views: number
 
     @Column({ nullable: true })
     tags?: string
